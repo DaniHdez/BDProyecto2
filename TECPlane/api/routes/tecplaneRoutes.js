@@ -1,16 +1,28 @@
 "use strict";
 module.exports = function(app) {
-  var todoList = require("../controllers/tecplaneController");
+  var aeropuerto = require("../controllers/aeropuertoController");
 
-  // todoList Routes
+  // ##################################
+  // RUTAS AEROPUERTO                 #
+  // ##################################
   app
-    .route("/aeropuerto")
-    .get(todoList.list_all_tasks)
-    .post(todoList.create_a_task);
+    .route("/aeropuertos/")
+    .get(aeropuerto.lista_aeropuertos)
+  
+  app
+    .route("/aeropuerto/")
+    .post(aeropuerto.crear_nuevo);
 
   app
     .route("/aeropuerto/:idAeropuerto")
-    .get(todoList.read_a_task)
-    .put(todoList.update_a_task)
-    .delete(todoList.delete_a_task);
+    .get(aeropuerto.obtener_info)
+    //.put(aeropuerto.actualizar)
+    //.delete(aeropuerto.eliminar);
+
+    // Agregar rutas con consultas especiales (si hay)
+    // a .route("aeropuerto/idAeropuerto/<nombre consulta>") un aeropuerto especifico
+    // a .route("aeropuerto/<nombre consulta>") para todos los aeropuertos
+
+
+
 };
