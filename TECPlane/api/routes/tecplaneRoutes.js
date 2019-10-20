@@ -33,4 +33,64 @@ module.exports = function(app) {
     .get(funcionario.obtener_info)
     .put(funcionario.actualizar)
     .delete(funcionario.eliminar);
+
+  var aerolinea = require("../controllers/aerolineaController.js");
+
+  // ##################################
+  // RUTAS AEROLINEAS                 #
+  // ##################################
+  app.route("/aerolineas/").get(aerolinea.lista_aerolineas);
+
+  app.route("/aerolinea/").post(aerolinea.crear_nuevo);
+
+  app
+    .route("/aerolinea/:codigo")
+    .get(aerolinea.obtener_info)
+    .put(aerolinea.actualizar)
+    .delete(aerolinea.eliminar);
+
+  var vuelo = require("../controllers/vueloController.js");
+
+  // ##################################
+  // RUTAS VUELOS                     #
+  // ##################################
+  app.route("/vuelos/").get(vuelo.lista_vuelos);
+
+  app.route("/vuelo/").post(vuelo.crear_nuevo);
+
+  app
+    .route("/vuelo/:codigo")
+    .get(vuelo.obtener_info)
+    .put(vuelo.actualizar)
+    .delete(vuelo.eliminar);
+
+  var pasajero = require("../controllers/pasajeroController.js");
+
+  // ##################################
+  // RUTAS PASAJEROS                  #
+  // ##################################
+  app.route("/pasajeros/").get(pasajero.lista_pasajeros);
+
+  app.route("/pasajero/").post(pasajero.crear_nuevo);
+
+  app
+    .route("/pasajero/:cedula")
+    .get(pasajero.obtener_info)
+    .put(pasajero.actualizar)
+    .delete(pasajero.eliminar);
+
+  var boleto = require("../controllers/boletoController.js");
+
+  // ##################################
+  // RUTAS BOLETOS                    #
+  // ##################################
+  app.route("/boletos/").get(boleto.lista_boletos);
+
+  app.route("/boleto/").post(boleto.crear_nuevo);
+
+  app
+    .route("/boleto/:codigo")
+    .get(boleto.obtener_info)
+    .put(boleto.actualizar)
+    .delete(boleto.eliminar);
 };

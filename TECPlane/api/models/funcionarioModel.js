@@ -9,7 +9,7 @@ var FuncionarioSchema = new Schema({
   AreaTrabajo: String,
   CodigoAeropuerto: Number,
   Usuario: String,
-  Contraseña: String
+  Contrasena: String
 });
 
 module.exports = mongoose.model("Funcionario", FuncionarioSchema);
