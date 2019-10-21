@@ -6,7 +6,7 @@ module.exports = function(app) {
   // RUTAS AEROPUERTO                 #
   // ##################################
   app
-    .route("/aeropuertos/")
+    .route("/aeropuerto/get_all")
     .get(aeropuerto.lista_aeropuertos)
   
   app
@@ -14,7 +14,7 @@ module.exports = function(app) {
     .post(aeropuerto.crear_nuevo);
 
   app
-    .route("/aeropuerto/:idAeropuerto")
+    .route("/aeropuerto/:codigo")
     .get(aeropuerto.obtener_info)
     //.put(aeropuerto.actualizar)
     //.delete(aeropuerto.eliminar);
