@@ -1,6 +1,6 @@
 import React from 'react';
-import Aeropuerto from './admin/aeropuerto'
-import Aerolinea from './admin/aerolineaview'
+import Aeropuerto from './adminviews/aeropuerto'
+import Aerolinea from './adminviews/aerolineaview'
 
 import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import LocalAirportIcon from '@material-ui/icons/LocalAirport';
