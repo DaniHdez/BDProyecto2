@@ -41,3 +41,26 @@ exports.eliminar = function(req, res) {
     res.json({ message: "Vuelo eliminado correctamente" });
   });
 };
+
+//ESPECIALES//
+
+exports.precio_vuelo = function(req, res) {
+  vuelo.find({ Codigo: req.params.codigo }, { Precio: 1, _id: 0 }, function(
+    err,
+    vuelo
+  ) {
+    if (err) res.send(err);
+    res.json(vuelo);
+  });
+};
+
+exports.vuelos_aerolinea = function(req, res) {
+  vuelo.find(
+    { CodigoAerolinea: req.params.codigoAerolinea },
+    { Nombre: 1, BoletosVendidos: 1, _id: 0 },
+    function(err, vuelo) {
+      if (err) res.send(err);
+      res.json(vuelo);
+    }
+  );
+};

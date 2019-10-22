@@ -49,6 +49,9 @@ module.exports = function(app) {
     .put(aerolinea.actualizar)
     .delete(aerolinea.eliminar);
 
+  //ESPECIALES//
+  // app.route("/reportevuelos/").get(aerolinea.get_reporte);
+
   var vuelo = require("../controllers/vueloController.js");
 
   // ##################################
@@ -63,6 +66,10 @@ module.exports = function(app) {
     .get(vuelo.obtener_info)
     .put(vuelo.actualizar)
     .delete(vuelo.eliminar);
+
+  //ESPECIALES//
+  app.route("/vuelos/:codigoAerolinea").get(vuelo.vuelos_aerolinea);
+  // app.route("/preciovuelo/:codigo").get(vuelo.precio_vuelo);
 
   var pasajero = require("../controllers/pasajeroController.js");
 
@@ -93,4 +100,11 @@ module.exports = function(app) {
     .get(boleto.obtener_info)
     .put(boleto.actualizar)
     .delete(boleto.eliminar);
+
+  //  ESPECIALES//
+  app.route("/cantidadboletos/:codigoVuelo").get(boleto.cantidad_vuelo);
+  app
+    .route("/boletos/:codigoVuelo/:estado")
+    .get(boleto.cantidad_vuelo_vendidos);
+  app.route("/boletos/:codigoPasajero").get(boleto.boleto_pasajero); //SI sirve NO  BORRAR
 };

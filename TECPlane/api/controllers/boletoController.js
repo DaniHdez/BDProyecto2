@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 boleto = mongoose.model("Boleto");
+vuelo = mongoose.model("Vuelo");
 
 exports.lista_boletos = function(req, res) {
   boleto.find({}, function(error, lista) {
@@ -39,5 +40,34 @@ exports.eliminar = function(req, res) {
   boleto.remove({ Codigo: req.params.codigo }, function(err, boleto) {
     if (err) res.send(err);
     res.json({ message: "Boleto eliminado correctamente" });
+  });
+};
+
+//ESPECIALES//
+
+exports.cantidad_vuelo = function(req, res) {
+  boleto.count({ CodigoVuelo: req.params.codigoVuelo }, function(err, boleto) {
+    if (err) res.send(err);
+    res.json(boleto);
+  });
+};
+
+exports.cantidad_vuelo_vendidos = function(req, res) {
+  boleto.count(
+    { CodigoVuelo: req.params.codigoVuelo, Estado: req.params.estado },
+    function(err, boleto) {
+      if (err) res.send(err);
+      res.json(boleto);
+    }
+  );
+};
+
+exports.boleto_pasajero = function(req, res) {
+  boleto.find({ CodigoPasajero: req.params.codigoPasajero }, function(
+    err,
+    boleto
+  ) {
+    if (err) res.send(err);
+    res.json(boleto);
   });
 };
