@@ -1,12 +1,16 @@
 import React from 'react';
-
+import Orders from '../../assets/Table';
+import Title from '../../assets/Title';
 const aerolineaview = () => {
     return (
-        <div>
-             <h1>Hola Aerolineas</h1>
-           
-        </div>
+        <React.Fragment>
+        <Orders/>
+        </React.Fragment>
     );
 };
 
 export default aerolineaview;
+
+
+
+

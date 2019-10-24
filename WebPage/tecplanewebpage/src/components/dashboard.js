@@ -12,6 +12,7 @@ import {
 } from "react-router-dom"
 
 import './dashboard.css'
+import { Container } from '@material-ui/core';
 
 
 
@@ -40,13 +41,13 @@ class dashboard extends Component {
             else views [rout.key] = rout.component
         });
         this.state = {
-            view : Hello,
+            view : views['home'],
             viewsxroutes : views
         }
         
     }
     changeview(selected){
-        this.setState({
+        this.setState( {
             view : this.state.viewsxroutes[selected],
             viewsxroutes : this.state.viewsxroutes
             }
@@ -65,7 +66,7 @@ class dashboard extends Component {
                                 this.changeview(selected)
                     } } } >
                         <SideNav.Toggle />
-                        <SideNav.Nav defaultSelected="profile">
+                        <SideNav.Nav defaultSelected="home">
                         {
                             this.props.routes !== undefined &&
                             this.props.routes.length > 0 && 
@@ -102,7 +103,10 @@ class dashboard extends Component {
                         </NavItem>
                         </SideNav.Nav>
                     </SideNav>
-                    <React.Fragment>{<this.state.view/>}</React.Fragment>
+                    <main>
+                        <Container>{<this.state.view/>}</Container>
+                        
+                    </main>
                 </React.Fragment>
             ) }/>
         </Router>

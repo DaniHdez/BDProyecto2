@@ -11,7 +11,7 @@ import GroupIcon from '@material-ui/icons/Group';
 const routeAdmin = [
     {
         text : "Aeropuerto",
-        key : "airport",
+        key : "home",
         component : Aeropuerto,
         icon : <LocalAirportIcon/>,
         subTabs: []
@@ -42,23 +42,7 @@ const routeAdmin = [
         key : "reports",
         component :() => {return ( <h1> Hola Reportes </h1>) },
         icon : <TrendingUpIcon/>, 
-        subTabs: [
-            {
-                text : "Boletos",
-                key : "reports/tickets",
-                component : () => { return ( <h1> Hola Reportes Boletos </h1>)} 
-            },
-            {
-                text : "Compras",
-                key : "reports/purshase",
-                component : () =><h1> Hola Reportes Compras </h1> 
-            },
-            {
-                text : "Destinos",
-                key : "reports/locations",
-                component :() => <h1> Hola Reportes Destinos </h1> 
-            }
-        ]
+        subTabs: []
     }
 ];
 
