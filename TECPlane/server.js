@@ -1,6 +1,7 @@
+var cors = require('cors');
 var express = require("express"),
   app = express(),
-  port = process.env.PORT || 3000,
+  port = process.env.PORT || 8080,
   mongoose = require("mongoose"),
   aeropuerto = require("./api/models/aeropuertoModel"),
   funcionario = require("./api/models/funcionarioModel"),
@@ -9,13 +10,13 @@ var express = require("express"),
   pasajero = require("./api/models/pasajeroModel"),
   boleto = require("./api/models/boletoModel"),
   bodyParser = require("body-parser");
-
+  
 mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://localhost/TECPlaneDB");
 
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
 var routes = require("./api/routes/tecplaneRoutes");
 routes(app);
 
