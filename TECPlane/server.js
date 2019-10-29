@@ -1,3 +1,5 @@
+
+const userSchema = require('./userSchema')
 var cors = require('cors');
 var express = require("express"),
   app = express(),
@@ -11,8 +13,11 @@ var express = require("express"),
   boleto = require("./api/models/boletoModel"),
   bodyParser = require("body-parser");
   
+
+const connectionString = "mongodb+srv:admin:paso1234@cluster0-ntg5g.mongodb.net/test?retryWrites=true&w=majority"
+
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost/TECPlaneDB");
+mongoose.connect(connectionString);
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));

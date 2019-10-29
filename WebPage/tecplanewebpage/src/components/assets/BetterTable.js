@@ -12,7 +12,18 @@ import EditIcon from '@material-ui/icons/Edit';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelIcon from '@material-ui/icons/Cancel';
 
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+// import DialogContent from '@material-ui/core/DialogContent';
+// import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
 
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 /**
  * TablePage
  * Props:
@@ -35,8 +46,9 @@ class TablePage extends Component {
             colus.push({ 'label' : 'Seleccionar' })
         colus.push(...props.labels)
         this.state = {
-            edit : false,
-            save : false,  
+            check : false,
+            save : false,
+            confirm : false, 
             data : props.data,
             data_temp : props.data,
             labels : colus,
@@ -45,9 +57,19 @@ class TablePage extends Component {
         
         this.set_values()
     }
+
+
+    /**
+     * DATA HANDLERS IN THE TABLE
+     */
+
+    /**
+     * 
+     * @param {*} b 
+     */
     check_row(b){
         var key = b.target.id
-        this.state.data[key].edit = !this.state.data[key].edit
+        this.state.data[key].check = !this.state.data[key].check
         alert(key)
     }
     set_values(){
@@ -81,7 +103,6 @@ class TablePage extends Component {
             alert("Favor Ingresar dato en el Campo: "+labelKey)
         }
     }
-
     addRow(row){
         this.state.data_panel.pop()
         alert("HOLA")
@@ -123,7 +144,7 @@ class TablePage extends Component {
             if(!this.state.edit){
                 for (let index = 0; index < this.state.data.length; index++) {
                     var row = this.state.data[index];
-                    if (row.edit){
+                    if (row.check){
                         check = true
                         for(let key in this.state.data_panel[index]){
                             if(key != 'checkbox'){
@@ -131,7 +152,6 @@ class TablePage extends Component {
                                 this.state.data_panel[index][key] = <MDBInput size="sm" type="textbox" hint={text}/>
                             }
                         }
-
                     }
                 }
             }
@@ -143,9 +163,63 @@ class TablePage extends Component {
     else
         alert("Finalice la acción anterior para realizar una nueva")
     }
+
+    
+    delete_elements(){
+        if(this.state.edit || this.state.save)
+            alert("Finalice la acción anterior para realizar una nueva")
+        else{
+            var check = false
+            for (let index = 0; index < this.state.data.length; index++) {
+                var row = this.state.data[index];
+                if (row.check)
+                    check = true
+            }
+            
+            if(check)
+                this.setState({ confirm:true});
+            else
+                alert("Seleccione los datos que desea editar")
+        }
+    }
+
+    handleClose(){
+        this.setState({confirm : false})
+      };
+
+    confirmDelete() {
+        var elements = [];
+        for (let index = 0; index < this.state.data.length; index++) {
+            var row = this.state.data[index];
+            if (row.check)
+                elements.push(row[this.props.labels[0]["field"]])
+        }
+        this.props.actions.delData(elements)
+        this.setState({confirm:false})
+    }
     render(){
     return(
         <MDBCard narrow>
+
+         <Dialog
+            open={this.state.confirm}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={this.handleClose}
+            aria-labelledby="alert-dialog-slide-title"
+            aria-describedby="alert-dialog-slide-description"
+        >
+        <DialogTitle id="alert-dialog-slide-title">{"¿Seguro que desea eleminar los elementos seleccionados?"}</DialogTitle>
+        <DialogActions>
+          <Button onClick={() => this.handleClose()} color="primary">
+            CANCELAR
+          </Button>
+          <Button onClick={() => this.confirmDelete()} color="primary">
+            ACEPTAR
+          </Button>
+        </DialogActions>
+      </Dialog>
+
         <MDBCardHeader className="view view-cascade gradient-card-header blue-gradient d-flex justify-content-between align-items-center py-2 mx-4 mb-3">
             <a href="#" className="white-text mx-3">{this.props.title}</a>
             {this.props.editable && <div>
@@ -167,7 +241,7 @@ class TablePage extends Component {
             <MDBBtn outline onClick = {() => this.create_elements()} size="sm" color="white" className="px-2">
                 <AddCircleOutlineIcon/>
             </MDBBtn>
-            <MDBBtn outline  size="sm" color="white" className="px-2">
+            <MDBBtn outline  onClick = {() => this.delete_elements()}size="sm" color="white" className="px-2">
                 <DeleteIcon/>
             </MDBBtn>
             </div>}
@@ -181,6 +255,7 @@ class TablePage extends Component {
         </MDBCard>
     );}
 };
+
 
 export default TablePage;
 

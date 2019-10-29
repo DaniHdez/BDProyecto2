@@ -46,6 +46,7 @@ class aeropuerto extends Component {
     }
     this.actions = {
       newData : this.post_aeropuerto,
+      delData : this.delete_aeropuerto
     };
     
   }  
@@ -74,6 +75,7 @@ class aeropuerto extends Component {
               temp[element.field] = line[element.field]
           })
         console.log("Antes de PUSH")
+        console.log("PRINT",this)  
         b.addRow(temp)
         
       })
@@ -82,6 +84,23 @@ class aeropuerto extends Component {
       }
     )
   }
+
+  delete_aeropuerto(codes){
+    codes.forEach(code => {
+      console.log("print",code)
+      var route = 'http://localhost:8080/aeropuerto/'+ code;
+      var url = new URL(route)
+        axios.delete(url)
+        .then(response => {
+          console.log(response)
+        } )
+        .catch(error=>{
+          console.log(error)
+          alert(error)
+        })
+      } );
+  }
+    
   
   componentDidMount(){
     axios.get('http://localhost:8080/aeropuertos/')
@@ -105,7 +124,6 @@ class aeropuerto extends Component {
         {
           // aeropuertos:
           aeropuertos:rows
-
         }
       )
     })
