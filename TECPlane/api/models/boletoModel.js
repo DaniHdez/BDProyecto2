@@ -8,7 +8,8 @@ var BoletoSchema = new Schema({
   Observaciones: String,
   Estado: String,
   CodigoPasajero: Number,
-  NumeroAsiento: Number
+  NumeroAsiento: Number,
+  FechaCompra: Date
 });
 
 module.exports = mongoose.model("Boleto", BoletoSchema);

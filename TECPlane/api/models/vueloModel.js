@@ -13,7 +13,8 @@ var VueloSchema = new Schema({
   Estado: String,
   Capacidad: Number,
   CodigoAerolinea: Number,
-  BoletosVendidos: Number
+  BoletosVendidos: Number,
+  FechaVuelo: Date
 });
 
 module.exports = mongoose.model("Vuelo", VueloSchema);

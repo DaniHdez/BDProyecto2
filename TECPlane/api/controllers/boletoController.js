@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 boleto = mongoose.model("Boleto");
+pasajero = mongoose.model("Pasajero");
 
 exports.lista_boletos = function(req, res) {
   boleto.find({}, function(error, lista) {
@@ -72,12 +73,6 @@ exports.boleto_pasajero = function(req, res) {
   });
 };
 
-// var rangoPasajeros = [];
-
-// function addRango(rango) {
-//   rangoPasajeros.push(rango);
-// }
-
 function crearReporte(res, listaBoletos) {
   var listaPasajeros = {};
   listaBoletos.forEach(element => {
@@ -120,4 +115,176 @@ exports.boletos_pasajeros = function(req, res) {
       // res.json(boleto);
     }
   );
+};
+
+function reporteBoletosComprados(res, listaBoletosComprados, listaPasajeros) {
+  var listaFinal = [];
+  var boleto = {};
+  listaBoletosComprados.forEach(element => {
+    var codigoPasajero = element.CodigoPasajero;
+    listaPasajeros.forEach(element2 => {
+      var cedula = element2.Cedula;
+      if (codigoPasajero == cedula) {
+        boleto = {
+          codigo: element.Codigo,
+          pasajero: element2.Nombre,
+          estado: element.Estado,
+          fecha: element.FechaCompra
+        };
+      }
+    });
+    listaFinal.push(boleto);
+  });
+  // res.json(listaBoletosComprados);
+  res.json(listaFinal);
+}
+
+function pasajerosCodigo(res, listaBoletos) {
+  pasajero.find({}, { Cedula: 1, Nombre: 1, _id: 0 }, function(err, pasajero) {
+    if (err) res.send(err);
+    reporteBoletosComprados(res, listaBoletos, pasajero);
+    //res.json(pasajero);
+  });
+}
+
+exports.boletos_comprados = function(req, res) {
+  boleto.find(
+    {
+      $or: [
+        { Estado: "Comprado" },
+        { Estado: "Chequeado" },
+        { Estado: "Utilizado" }
+      ]
+    },
+    {
+      Codigo: 1,
+      Estado: 1,
+      CodigoPasajero: 1,
+      CodigoVuelo: 1,
+      FechaCompra: 1,
+      _id: 0
+    },
+    function(err, boleto) {
+      if (err) res.send(err);
+      pasajerosCodigo(res, boleto);
+      //res.json(boleto);
+    }
+  );
+};
+
+exports.boletos_comprados_estado = function(req, res) {
+  boleto.find(
+    { Estado: req.params.estado },
+    {
+      Codigo: 1,
+      Estado: 1,
+      CodigoPasajero: 1,
+      CodigoVuelo: 1,
+      FechaCompra: 1,
+      _id: 0
+    },
+    function(err, boleto) {
+      if (err) res.send(err);
+      pasajerosCodigo(res, boleto);
+      //res.json(boleto);
+    }
+  );
+};
+
+exports.boletos_comprados_fechas = function(req, res) {
+  boleto.find(
+    {
+      $and: [
+        {
+          FechaCompra: {
+            $gte: req.params.fechainicial,
+            $lt: req.params.fechafinal
+          }
+        },
+        {
+          $or: [
+            { Estado: "Comprado" },
+            { Estado: "Chequeado" },
+            { Estado: "Utilizado" }
+          ]
+        }
+      ]
+    },
+    {
+      Codigo: 1,
+      Estado: 1,
+      CodigoPasajero: 1,
+      CodigoVuelo: 1,
+      FechaCompra: 1,
+      _id: 0
+    },
+    function(err, boleto) {
+      if (err) res.send(err);
+      pasajerosCodigo(res, boleto);
+      //res.json(boleto);
+    }
+  );
+};
+
+function boletos_comprados_pnombre(res, cedula) {
+  boleto.find(
+    {
+      $and: [
+        { CodigoPasajero: cedula[0].Cedula },
+        {
+          $or: [
+            { Estado: "Comprado" },
+            { Estado: "Chequeado" },
+            { Estado: "Utilizado" }
+          ]
+        }
+      ]
+    },
+    {
+      Codigo: 1,
+      Estado: 1,
+      CodigoPasajero: 1,
+      CodigoVuelo: 1,
+      FechaCompra: 1,
+      _id: 0
+    },
+    function(err, boleto) {
+      if (err) res.send(err);
+      pasajerosCodigo(res, boleto);
+      //res.json(boleto);
+    }
+  );
+}
+
+exports.boletos_comprados_pasajero = function(req, res) {
+  pasajero.find({ Nombre: req.params.nombre }, { Cedula: 1, _id: 0 }, function(
+    err,
+    pasajero
+  ) {
+    if (err) res.send(err);
+    // res.json(pasajero);
+    boletos_comprados_pnombre(res, pasajero);
+  });
+};
+
+// function conteoVuelosPasajero(res, listaVuelosPasajero){
+//   listaPasajerosVuelos = {};
+//   listaVuelosPasajero.forEach(element => {
+//     var passenger = element.CodigoPasajero;
+//     var flight = element.CodigoVuelo;
+//     if (!(passenger in listaPasajerosVuelos)){
+
+//     }
+//   });
+// }
+
+exports.top_pasajeros = function(req, res) {
+  boleto.find({}, { CodigoVuelo: 1, CodigoPasajero: 1, _id: 0 }, function(
+    err,
+    boleto
+  ) {
+    if (err) res.send(err);
+    res.json(boleto);
+    // conteoVuelosPasajero(res, boleto);
+  });
 };

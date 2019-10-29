@@ -69,7 +69,6 @@ function reporteDestinos(res, listaDestinos) {
   var listaFinal = {};
   listaDestinos.forEach(element => {
     var destiny = element.Destino;
-    console.log(destiny);
     if (!(destiny in listaFinal)) {
       var cantidad = element.BoletosVendidos;
       if (cantidad != undefined) {

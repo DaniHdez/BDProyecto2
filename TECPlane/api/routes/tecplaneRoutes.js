@@ -109,4 +109,14 @@ module.exports = function(app) {
     .get(boleto.cantidad_vuelo_vendidos);
   app.route("/boletos/:codigoPasajero").get(boleto.boleto_pasajero);
   app.route("/boletospasajeros/").get(boleto.boletos_pasajeros);
+  // Reporte boletos comprados y filtros/
+  app.route("/boletosvendidos/").get(boleto.boletos_comprados);
+  app.route("/boletosvendidos/:estado").get(boleto.boletos_comprados_estado);
+  app
+    .route("/boletosvendidos/:fechainicial/:fechafinal")
+    .get(boleto.boletos_comprados_fechas);
+  app
+    .route("/boletosvendidospasajero/:nombre")
+    .get(boleto.boletos_comprados_pasajero);
+  app.route("/toppasajeros").get(boleto.top_pasajeros);
 };
