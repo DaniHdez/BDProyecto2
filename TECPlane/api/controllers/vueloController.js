@@ -57,10 +57,41 @@ exports.precio_vuelo = function(req, res) {
 exports.vuelos_aerolinea = function(req, res) {
   vuelo.find(
     { CodigoAerolinea: req.params.codigoAerolinea },
-    { Nombre: 1, BoletosVendidos: 1, _id: 0 },
+    { Nombre: 1, BoletosVendidos: 1, Precio: 1, _id: 0 },
     function(err, vuelo) {
       if (err) res.send(err);
       res.json(vuelo);
     }
   );
+};
+
+function reporteDestinos(res, listaDestinos) {
+  var listaFinal = {};
+  listaDestinos.forEach(element => {
+    var destiny = element.Destino;
+    if (!(destiny in listaFinal)) {
+      var cantidad = element.BoletosVendidos;
+      if (cantidad != undefined) {
+        listaFinal[destiny] = {
+          cantidad: element.BoletosVendidos
+        };
+      }
+    } else {
+      var cantidad = element.BoletosVendidos;
+      if (cantidad != undefined) {
+        listaFinal[destiny].cantidad += element.BoletosVendidos;
+      }
+    }
+  });
+  res.json(listaFinal);
+}
+
+exports.destinos = function(req, res) {
+  vuelo.find({}, { Destino: 1, BoletosVendidos: 1, _id: 0 }, function(
+    err,
+    vuelo
+  ) {
+    if (err) res.send(err);
+    reporteDestinos(res, vuelo);
+  });
 };
