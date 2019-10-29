@@ -30,12 +30,17 @@ import CancelIcon from '@material-ui/icons/Cancel';
 class TablePage extends Component {
     constructor(props){
         super(props);
+        var colus =[];
+        if(props.editable)
+            colus.push({ 'label' : 'Seleccionar' })
+        colus.push(...props.labels)
         this.state = {
             edit : false,
             save : false,  
             data : props.data,
-            labels : props.labels,
-            data_panel : [],
+            data_temp : props.data,
+            labels : colus,
+            data_panel : []
         };
         
         this.set_values()
@@ -61,26 +66,28 @@ class TablePage extends Component {
     }
     get_value(value,field){
         let i = this.state.data.length - 1
-        this.state.data[i][field] = value
+        this.state.data_temp[i][field] = value
     }
     editvalue(row, colum, val){
         
     }
     save_value(){
-        let newRow = this.state.data.pop()
+        var i = this.state.data_temp.length - 1
+        let newRow = this.state.data_temp[i]
         if(newRow !== {} && newRow.hasOwnProperty(this.props.labels[1]["field"]) )
-            if(this.props.actions.newData(newRow)){
-                alert("Agregado Correctamente");
-                this.set_values()
-            }
-            else {
-                alert("Ha ocurrido un error con la conexión.\nIntente más tarde.")
-                this.cancel_save()
-            }
+            this.props.actions.newData(newRow,this)
         else{
             let labelKey = this.props.labels[1]['label']
             alert("Favor Ingresar dato en el Campo: "+labelKey)
         }
+    }
+
+    addRow(row){
+        this.state.data_panel.pop()
+        alert("HOLA")
+        this.state.data_temp.pop()
+        this.state.data.push(row)
+        this.setState();
     }
 
     cancel_save(){
@@ -103,12 +110,10 @@ class TablePage extends Component {
             });
             
             this.state.data_panel.push(newElement)
-            this.state.data.push({})
+            this.state.data_temp.push({})
             
             this.setState ({save : !this.state.save});
         }
-        else
-            alert("Finalice la acción anterior para realizar una nueva")
     }
 
     edit_elements(){
@@ -169,7 +174,7 @@ class TablePage extends Component {
         </MDBCardHeader>
         <MDBCardBody cascade>
             <MDBTable btn fixed>
-            <MDBTableHead columns={this.props.labels} />
+            <MDBTableHead columns={this.state.labels} />
             <MDBTableBody rows={this.state.data_panel} />
             </MDBTable>
         </MDBCardBody>

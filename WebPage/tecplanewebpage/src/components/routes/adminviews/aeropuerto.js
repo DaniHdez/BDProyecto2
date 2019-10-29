@@ -1,71 +1,27 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Table from '../../assets/BetterTable';
+import axios from 'axios';
 
-var rows = [
-    {
-      'code': 'Mark',
-      'name': 'Otto',
-      'phone': '@mdo',
-      'location': 'Mark',
-      'email': 'Otto',
-      'url': '@mdo',
-    },
-    {
-      'first': 'Jacob',
-      'last': 'Thornton',
-      'phone': '@fat',
-      'username2': 'Jacob',
-      'username3': 'Thornton',
-      'username4': '@fat',
-    },
-    {
-      'first':'JUAN',
-      'last': 'the Bird',
-      'username': '@twitter',
-      'username2': 'Larry',
-      'username3': 'the Bird',
-      'username4': '@twitter'
-    },
-    {
-      'first': 'Paul',
-      'last': 'Topolski',
-      'username': '@P_Topolski',
-      'username2': 'Paul',
-      'username3': 'Topolski',
-      'username4': '@P_Topolski'
-    },
-    {
-     'first': 'Larry',
-      'last': 'the Bird',
-      'username': '@twitter',
-      'username2': 'Larry',
-      'username3': 'the Bird',
-      'username4': '@twitter',
-    }
-  ];
 
 const fields = [
-    { 
-      'label' : 'Seleccionar'
-    }, //Select box
     {
         'label' : 'Código',
-        'field' : 'code',
+        'field' : 'Codigo',
         'sort'  : 'asc'
     },
     {
         'label' : 'Nombre',
-        'field' : 'name',
+        'field' : 'Nombre',
         'sort'  : 'asc'
     },
     {
         'label' : 'Ubicación',
-        'field' : 'location',
+        'field' : 'Ubicacion',
         'sort'  : 'asc'
     },
     {
         'label' : 'Teléfono',
-        'field' : 'phone',
+        'field' : 'telefono',
         'sort'  : 'asc'
     },
     {
@@ -80,18 +36,94 @@ const fields = [
     }
 ];
 
-function post_aeropuerto(aeropuerto){
-  return false;
-};
-var actions = {
-  newData : post_aeropuerto,
-};
 
-const aeropuerto = () => {
-    // load_panel();
+class aeropuerto extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      aeropuertos : [],
+      error : ''
+    }
+    this.actions = {
+      newData : this.post_aeropuerto,
+    };
+    
+  }  
+
+  post_aeropuerto(aeropuerto, b){
+    var json = {}
+    var contacto = {}
+    fields.forEach(element => {
+        if(element.field == 'email' || element.field == 'telefono')
+          contacto[element.field] = aeropuerto[element.field]
+        else
+            json[element.field] = aeropuerto[element.field]
+    });
+    
+    json['Contacto'] = contacto;
+    
+    axios.post('http://localhost:8080/aeropuerto/', json)
+    .then(response => {
+        console.log('PRIIINT',response["data"])
+        var line = response["data"];
+        var temp = {}  
+          fields.forEach(element => {
+            if(element.field == "telefono"||element.field == "email")
+              temp[element.field] = line.Contacto[element.field]
+            else
+              temp[element.field] = line[element.field]
+          })
+        console.log("Antes de PUSH")
+        b.addRow(temp)
+        
+      })
+      .catch( error =>{
+        alert(error)
+      }
+    )
+  }
+  
+  componentDidMount(){
+    axios.get('http://localhost:8080/aeropuertos/')
+    .then(response => {
+      console.log(response.data)
+      var rows = []
+      response.data.forEach(line => {
+        var temp = {}  
+        fields.forEach(element => {
+          if(element.field == "telefono"||element.field == "email"){
+            console.log("PRINT",line.Contacto[element.field])
+            temp[element.field] = line.Contacto[element.field]
+        }
+          else
+            temp[element.field] = line[element.field]
+        });
+        console.log("print", temp)  
+        rows.push(temp)
+      });
+      this.setState(
+        {
+          // aeropuertos:
+          aeropuertos:rows
+
+        }
+      )
+    })
+    .catch(error => {
+      console.log(error);
+      alert('Error tratando de obtener Aeropuertos')
+
+    });
+  }
+  render() {
+    // const {aeropuertos} = this.state
     return (
-        <Table title="Aeropuertos" data={rows} labels={fields} actions={actions} editable={true} />
-    );
-};
-
-export default aeropuerto
+      <React.Fragment>
+      {
+        this.state.aeropuertos.length>0 &&
+        <Table title="Aeropuertos" data={this.state.aeropuertos} labels={fields} actions={this.actions} editable={true} /> 
+      }
+      </React.Fragment>
+    ) };
+  }
+export default aeropuerto;
