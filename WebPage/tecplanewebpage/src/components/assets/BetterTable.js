@@ -45,6 +45,9 @@ class TablePage extends Component {
         if(props.editable)
             colus.push({ 'label' : 'Seleccionar' })
         colus.push(...props.labels)
+
+        var empty_data = this.props.data.length>0 ? false : true; 
+        // var empty_data = true
         this.state = {
             check : false,
             save : false,
@@ -52,10 +55,11 @@ class TablePage extends Component {
             data : props.data,
             data_temp : props.data,
             labels : colus,
-            data_panel : []
+            data_panel : [],
+            empty : empty_data
         };
-        
-        this.set_values()
+        if(!empty_data)
+            this.set_values()
     }
 
 
@@ -63,15 +67,6 @@ class TablePage extends Component {
      * DATA HANDLERS IN THE TABLE
      */
 
-    /**
-     * 
-     * @param {*} b 
-     */
-    check_row(b){
-        var key = b.target.id
-        this.state.data[key].check = !this.state.data[key].check
-        alert(key)
-    }
     set_values(){
             this.state.data.forEach(row => {
                 let panel_row = {};
@@ -86,6 +81,12 @@ class TablePage extends Component {
         });
 
     }
+    
+    check_row(b){
+        var key = b.target.id
+        this.state.data[key].check = !this.state.data[key].check
+    }
+
     get_value(value,field){
         let i = this.state.data.length - 1
         this.state.data_temp[i][field] = value
@@ -105,7 +106,6 @@ class TablePage extends Component {
     }
     addRow(row){
         this.state.data_panel.pop()
-        alert("HOLA")
         this.state.data_temp.pop()
         this.state.data.push(row)
         this.setState();
@@ -133,7 +133,7 @@ class TablePage extends Component {
             this.state.data_panel.push(newElement)
             this.state.data_temp.push({})
             
-            this.setState ({save : !this.state.save});
+            this.setState ({save : !this.state.save, empty:false});
         }
     }
 
@@ -247,10 +247,12 @@ class TablePage extends Component {
             </div>}
         </MDBCardHeader>
         <MDBCardBody cascade>
+            
             <MDBTable btn fixed>
             <MDBTableHead columns={this.state.labels} />
             <MDBTableBody rows={this.state.data_panel} />
             </MDBTable>
+            
         </MDBCardBody>
         </MDBCard>
     );}

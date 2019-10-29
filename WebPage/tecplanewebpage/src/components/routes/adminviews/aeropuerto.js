@@ -84,23 +84,25 @@ class aeropuerto extends Component {
       }
     )
   }
+  handleResponse(response){
+    console.log("print",response)
+    console.log("print",this.state.aeropuertos)
+    
+  }
 
   delete_aeropuerto(codes){
     codes.forEach(code => {
-      console.log("print",code)
       var route = 'http://localhost:8080/aeropuerto/'+ code;
       var url = new URL(route)
         axios.delete(url)
-        .then(response => {
-          console.log(response)
-        } )
+        .then(response => {this.handleResponse(response)})
         .catch(error=>{
-          console.log(error)
+          console.log("print",error)
           alert(error)
         })
       } );
   }
-    
+  
   
   componentDidMount(){
     axios.get('http://localhost:8080/aeropuertos/')
