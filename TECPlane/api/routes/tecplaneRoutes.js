@@ -67,10 +67,14 @@ module.exports = function(app) {
     .put(vuelo.actualizar)
     .delete(vuelo.eliminar);
 
-  //ESPECIALES//
+  //ESPECIALES ADMIN//
   app.route("/vuelos/:codigoAerolinea").get(vuelo.vuelos_aerolinea);
   // app.route("/preciovuelo/:codigo").get(vuelo.precio_vuelo);
   app.route("/destinos/").get(vuelo.destinos);
+
+  //EESPECIALES FUNCIONARIOS//
+  app.route("/vuelosfecha/:fechainicial/:fechafinal").get(vuelo.vuelo_fecha);
+  app.route("/vuelosestado/:estado").get(vuelo.vuelo_estado);
 
   var pasajero = require("../controllers/pasajeroController.js");
 
@@ -87,6 +91,10 @@ module.exports = function(app) {
     .put(pasajero.actualizar)
     .delete(pasajero.eliminar);
 
+  // ESPECIALES funcionarios //
+  app.route("/pasajerocedula/:cedula").get(pasajero.pasajero_codigo);
+  app.route("/pasajeronombre/:nombre").get(pasajero.pasajero_nombre);
+
   var boleto = require("../controllers/boletoController.js");
 
   // ##################################
@@ -102,7 +110,7 @@ module.exports = function(app) {
     .put(boleto.actualizar)
     .delete(boleto.eliminar);
 
-  //  ESPECIALES//
+  //  ESPECIALES ADMIN  //
   app.route("/cantidadboletos/:codigoVuelo").get(boleto.cantidad_vuelo);
   app
     .route("/boletos/:codigoVuelo/:estado")
@@ -119,4 +127,15 @@ module.exports = function(app) {
     .route("/boletosvendidospasajero/:nombre")
     .get(boleto.boletos_comprados_pasajero);
   app.route("/toppasajeros").get(boleto.top_pasajeros);
+
+  // ESPECIALES PASAJEROS //
+
+  app.route("/vuelospasajero/:cedula").get(boleto.vuelos_pasajero);
+  app
+    .route("/vuelospasajerofecha/:cedula/:fechainicial/:fechafinal")
+    .get(boleto.vuelos_pasajero_fecha);
+
+  app
+    .route("/vuelospasajeroestado/:cedula/:estado")
+    .get(boleto.vuelos_pasajero_estado);
 };

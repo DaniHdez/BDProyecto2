@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 boleto = mongoose.model("Boleto");
 pasajero = mongoose.model("Pasajero");
+vuelo = mongoose.model("Vuelo");
 
 exports.lista_boletos = function(req, res) {
   boleto.find({}, function(error, lista) {
@@ -267,24 +268,224 @@ exports.boletos_comprados_pasajero = function(req, res) {
   });
 };
 
-// function conteoVuelosPasajero(res, listaVuelosPasajero){
-//   listaPasajerosVuelos = {};
-//   listaVuelosPasajero.forEach(element => {
-//     var passenger = element.CodigoPasajero;
-//     var flight = element.CodigoVuelo;
-//     if (!(passenger in listaPasajerosVuelos)){
-
-//     }
-//   });
-// }
+function pasajeros_distintos(res, listaPasVuelo) {
+  listaVuelos = {};
+  listaPasVuelo.forEach(element => {
+    var passenger = element.CodigoPasajero;
+    var flight = element.CodigoVuelo;
+    if (!(passenger in listaVuelos)) {
+      listaVuelos[passenger] = {
+        vuelos: [],
+        cantidad: 0
+      };
+      listaVuelos[passenger].vuelos.push(flight);
+      listaVuelos[passenger].cantidad += 1;
+    } else {
+      if (listaVuelos[passenger].vuelos.indexOf(flight) == -1) {
+        listaVuelos[passenger].vuelos.push(flight);
+        listaVuelos[passenger].cantidad += 1;
+      }
+    }
+  });
+  res.json(listaVuelos);
+}
 
 exports.top_pasajeros = function(req, res) {
-  boleto.find({}, { CodigoVuelo: 1, CodigoPasajero: 1, _id: 0 }, function(
-    err,
-    boleto
-  ) {
-    if (err) res.send(err);
-    res.json(boleto);
-    // conteoVuelosPasajero(res, boleto);
-  });
+  listaVuelos = {};
+  boleto.find(
+    {
+      $or: [
+        { Estado: "Comprado" },
+        { Estado: "Chequeado" },
+        { Estado: "Utilizado" }
+      ]
+    },
+    { CodigoPasajero: 1, CodigoVuelo: 1, _id: 0 },
+    function(err, boleto) {
+      if (err) res.send(err);
+      // res.json(boleto);
+      pasajeros_distintos(res, boleto);
+    }
+  );
+};
+// ESPECIALES PASAJEROS //
+
+function obtener_info_vuelos(res, listaVuelos) {
+  listaReporte = [];
+  vueloPass = {};
+  vuelo.find(
+    {},
+    { Codigo: 1, Nombre: 1, Estado: 1, FechaVuelo: 1, _id: 0 },
+    function(err, vuelo) {
+      if (err) res.send(err);
+      //res.json(vuelo);
+      vuelo.forEach(element => {
+        var flight = element.Codigo;
+        if (listaVuelos.indexOf(flight) != -1) {
+          vueloPass = {
+            Nombre: element.Nombre,
+            Estado: element.Estado,
+            Fecha: element.FechaVuelo
+          };
+          listaReporte.push(vueloPass);
+        }
+      });
+      res.json(listaReporte);
+    }
+  );
+}
+
+exports.vuelos_pasajero = function(req, res) {
+  boleto.find(
+    {
+      $and: [
+        { CodigoPasajero: req.params.cedula },
+        {
+          $or: [
+            { Estado: "Comprado" },
+            { Estado: "Chequeado" },
+            { Estado: "Utilizado" }
+          ]
+        }
+      ]
+    },
+    { CodigoVuelo: 1, _id: 0 },
+    function(err, boleto) {
+      if (err) res.send(err);
+      //res.json(boleto);
+      vuelos = [];
+      boleto.forEach(element => {
+        var flight = element.CodigoVuelo;
+        if (vuelos.indexOf(flight) == -1) {
+          vuelos.push(flight);
+        }
+      });
+      // res.json(vuelos);
+      obtener_info_vuelos(res, vuelos);
+    }
+  );
+};
+
+function obtener_info_vuelos_fecha(res, listaVuelos, inicial, final) {
+  listaReporte = [];
+  vueloPass = {};
+  vuelo.find(
+    {
+      FechaVuelo: {
+        $gte: inicial,
+        $lt: final
+      }
+    },
+    { Codigo: 1, Nombre: 1, Estado: 1, FechaVuelo: 1, _id: 0 },
+    function(err, vuelo) {
+      if (err) res.send(err);
+      // res.json(vuelo);
+      vuelo.forEach(element => {
+        var flight = element.Codigo;
+        if (listaVuelos.indexOf(flight) != -1) {
+          vueloPass = {
+            Nombre: element.Nombre,
+            Estado: element.Estado,
+            Fecha: element.FechaVuelo
+          };
+          listaReporte.push(vueloPass);
+        }
+      });
+      res.json(listaReporte);
+    }
+  );
+}
+
+exports.vuelos_pasajero_fecha = function(req, res) {
+  boleto.find(
+    {
+      $and: [
+        { CodigoPasajero: req.params.cedula },
+        {
+          $or: [
+            { Estado: "Comprado" },
+            { Estado: "Chequeado" },
+            { Estado: "Utilizado" }
+          ]
+        }
+      ]
+    },
+    { CodigoVuelo: 1, _id: 0 },
+    function(err, boleto) {
+      if (err) res.send(err);
+      //res.json(boleto);
+      vuelos = [];
+      boleto.forEach(element => {
+        var flight = element.CodigoVuelo;
+        if (vuelos.indexOf(flight) == -1) {
+          vuelos.push(flight);
+        }
+      });
+      // res.json(vuelos);
+      obtener_info_vuelos_fecha(
+        res,
+        vuelos,
+        req.params.fechainicial,
+        req.params.fechafinal
+      );
+    }
+  );
+};
+
+function obtener_info_vuelos_estado(res, listaVuelos, estado) {
+  listaReporte = [];
+  vueloPass = {};
+  vuelo.find(
+    {
+      Estado: estado
+    },
+    { Codigo: 1, Nombre: 1, Estado: 1, FechaVuelo: 1, _id: 0 },
+    function(err, vuelo) {
+      if (err) res.send(err);
+      // res.json(vuelo);
+      vuelo.forEach(element => {
+        var flight = element.Codigo;
+        if (listaVuelos.indexOf(flight) != -1) {
+          vueloPass = {
+            Nombre: element.Nombre,
+            Estado: element.Estado,
+            Fecha: element.FechaVuelo
+          };
+          listaReporte.push(vueloPass);
+        }
+      });
+      res.json(listaReporte);
+    }
+  );
+}
+
+exports.vuelos_pasajero_estado = function(req, res) {
+  boleto.find(
+    {
+      $and: [
+        { CodigoPasajero: req.params.cedula },
+        {
+          $or: [
+            { Estado: "Comprado" },
+            { Estado: "Chequeado" },
+            { Estado: "Utilizado" }
+          ]
+        }
+      ]
+    },
+    { CodigoVuelo: 1, _id: 0 },
+    function(err, boleto) {
+      if (err) res.send(err);
+      //res.json(boleto);
+      vuelos = [];
+      boleto.forEach(element => {
+        var flight = element.CodigoVuelo;
+        if (vuelos.indexOf(flight) == -1) {
+          vuelos.push(flight);
+        }
+      });
+      // res.json(vuelos);
+      obtener_info_vuelos_estado(res, vuelos, req.params.estado);
+    }
+  );
 };

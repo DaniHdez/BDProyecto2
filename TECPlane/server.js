@@ -12,6 +12,12 @@ var express = require("express"),
 
 mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://localhost/TECPlaneDB");
+// const connectionString =
+//   "mongodb+srv://admin:paso1234@basesavanzadas-hxybp.mongodb.net/test?retryWrites=true&w=majority";
+// mongoose.Promise = global.Promise;
+// mongoose.connect(connectionString).catch(error => {
+//   console.log(error);
+// });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

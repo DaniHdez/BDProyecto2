@@ -95,3 +95,44 @@ exports.destinos = function(req, res) {
     reporteDestinos(res, vuelo);
   });
 };
+
+exports.vuelo_fecha = function(req, res) {
+  vuelo.find(
+    {
+      FechaVuelo: {
+        $gte: req.params.fechainicial,
+        $lt: req.params.fechafinal
+      }
+    },
+    {
+      Nombre: 1,
+      Estado: 1,
+      FechaVuelo: 1,
+      Restricciones: 1,
+      Caracteristicas: 1,
+      _id: 0
+    },
+    function(err, infoVuelo) {
+      if (err) res.send(err);
+      res.json(infoVuelo);
+    }
+  );
+};
+
+exports.vuelo_estado = function(req, res) {
+  vuelo.find(
+    { Estado: req.params.estado },
+    {
+      Nombre: 1,
+      Estado: 1,
+      FechaVuelo: 1,
+      Restricciones: 1,
+      Caracteristicas: 1,
+      _id: 0
+    },
+    function(err, infoVuelo) {
+      if (err) res.send(err);
+      res.json(infoVuelo);
+    }
+  );
+};
