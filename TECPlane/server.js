@@ -11,7 +11,11 @@ var express = require("express"),
   bodyParser = require("body-parser");
 
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost/TECPlaneDB");
+// mongoose.connect("mongodb://localhost/TECPlaneDB");
+mongoose.connect(
+  "mongodb+srv://admin:paso1234@basesavanzadas-hxybp.mongodb.net/test?retryWrites=true&w=majority"
+);
+
 // const connectionString =
 //   "mongodb+srv://admin:paso1234@basesavanzadas-hxybp.mongodb.net/test?retryWrites=true&w=majority";
 // mongoose.Promise = global.Promise;

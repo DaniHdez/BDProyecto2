@@ -69,7 +69,7 @@ module.exports = function(app) {
 
   //ESPECIALES ADMIN//
   app.route("/vuelos/:codigoAerolinea").get(vuelo.vuelos_aerolinea);
-  // app.route("/preciovuelo/:codigo").get(vuelo.precio_vuelo);
+  app.route("/preciovuelo/:codigo").get(vuelo.precio_vuelo);
   app.route("/destinos/").get(vuelo.destinos);
 
   //EESPECIALES FUNCIONARIOS//

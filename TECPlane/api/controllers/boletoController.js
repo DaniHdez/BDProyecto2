@@ -228,6 +228,7 @@ exports.boletos_comprados_fechas = function(req, res) {
 };
 
 function boletos_comprados_pnombre(res, cedula) {
+  console.log(cedula);
   boleto.find(
     {
       $and: [
