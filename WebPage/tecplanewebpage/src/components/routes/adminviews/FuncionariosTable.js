@@ -20,76 +20,199 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
+// HTTP
+import axios from 'axios';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
   });
-/**
- * TablePage
- * Props:
- *  data: Datos que desea ingresar a la tabla
- *  labels: Titulo de cada columna de la tabla
- *  actions: Funciones mapeadas a los botones de la tabla
- *      Nombres Fijos:
- *          newData (Aeropuerto)
- *          updateData ()
- *          deleteData
- */
+
+
+  const fields = [
+    {
+    'label' : 'Seleccionar' 
+    },
+    {
+        'label' : 'Código',
+        'field' : 'Codigo',
+        'sort'  : 'asc'
+    },
+    {
+        'label' : 'Nombre',
+        'field' : 'Nombre',
+        'sort'  : 'asc'
+    },
+    {
+        'label' : 'Ubicación',
+        'field' : 'Ubicacion',
+        'sort'  : 'asc'
+    },
+    {
+        'label' : 'Teléfono',
+        'field' : 'telefono',
+        'sort'  : 'asc'
+    },
+    {
+        'label' : 'Email',
+        'field' : 'email',
+        'sort'  : 'asc'
+    },
+    {
+        'label' : 'Página Web',
+        'field' : 'url',
+        'sort'  : 'asc'
+    }
+];
+
 
 
 
 class TablePage extends Component {
     constructor(props){
         super(props);
-        var colus =[];
-        if(props.editable)
-            colus.push({ 'label' : 'Seleccionar' })
-        colus.push(...props.labels)
-
-        var empty_data = this.props.data.length>0 ? false : true; 
-        // var empty_data = true
         this.state = {
             check : false,
             save : false,
             confirm : false, 
-            data : props.data,
-            data_temp : props.data,
-            labels : colus,
+            data : [],
+            data_temp : [],
             data_panel : [],
-            empty : empty_data
         };
-       this.set_values()
+        this.delete_aeropuerto = this.delete_aeropuerto.bind(this);
+        this.post_aeropuerto = this.post_aeropuerto.bind(this);
     }
+
+
+    componentDidMount(){
+        axios.get('http://localhost:8080/aeropuertos/')
+        .then(response => {
+          var rows = []
+          if(response.data.length>0){
+            response.data.forEach(line => {
+              var temp = {}  
+              fields.forEach(element => {
+                  console.log("COMPONENT DIDMOUTN",element)
+                  if(element.label !== 'Seleccionar'){
+                        if(element.field == "telefono"||element.field == "email")
+                            temp[element.field] = line.Contacto[element.field]
+                        else
+                        temp[element.field] = line[element.field]
+                    }
+                } );    
+              console.log("print", temp)  
+              rows.push(temp)
+            });
+          }
+          else
+            rows = []
+          var empty_data = rows.length>0 ? false : true; 
+          this.set_values(rows);
+          this.setState( { data:rows, empty:empty_data } );
+          
+        })
+        .catch(error => {
+          console.log(error);
+          alert('Error tratando de obtener Aeropuertos')
+    
+        });
+      
+      }
+
+    post_aeropuerto(aeropuerto){
+        var json = {}
+        var contacto = {}
+        fields.forEach(element => {
+            if(element.field == 'email' || element.field == 'telefono')
+              contacto[element.field] = aeropuerto[element.field]
+            else
+                json[element.field] = aeropuerto[element.field]
+        });
+        
+        json['Contacto'] = contacto;
+        
+        axios.post('http://localhost:8080/aeropuerto/', json)
+        .then(response => {
+            var line = response["data"];
+            var temp = {}  
+              fields.forEach(element => {
+                if(element.field == "telefono"||element.field == "email")
+                  temp[element.field] = line.Contacto[element.field]
+                else
+                  temp[element.field] = line[element.field]
+              })
+            this.state.data.push(temp)
+            this.set_values(this.state.data)
+            // this.setState()
+            alert("Aeropuerto agregado correctamente")
+            
+          })
+          .catch( error =>{
+            alert(error)
+          }
+        )
+      }
+     
+
+
+      delete_aeropuerto(borrados){
+        borrados.forEach(element => {
+          var route = 'http://localhost:8080/aeropuerto/'+ element.Codigo;
+          var url = new URL(route)
+            axios.delete(url)
+            .then(response => {
+                // if(response.message === "Aeropuerto eliminado correctamente"){
+                    this.state.data.splice(element.index, 1)
+                    this.state.data_panel.splice(element.index, 1)
+                    this.setState({data_temp:this.state.data})
+                    alert("UPDATE!!!")
+
+                // }
+            } )
+            .catch(error=>{
+              console.log("print",error)
+              alert(error)
+            })
+          } );
+      }
+      
+
 
 
     /**
      * DATA HANDLERS IN THE TABLE
      */
-
-    set_values(){
-            this.state.data.forEach(row => {
-                let panel_row = {};
-                let id = this.state.data.indexOf(row)
-                if(this.props.editable)
+    set_values(data){
+        alert("SET VALUES CALL")
+        console.log(data)
+        var panel = []
+        data.forEach(row => {
+            let panel_row = {};
+            row.check = false;
+            let id = data.indexOf(row)
+            fields.forEach(element => {
+                if(element.label !== 'Seleccionar')
+                    panel_row[element.field] = row[element.field]
+                else
                     panel_row['checkbox'] = <MDBInput size="sm" label=" " type="checkbox"  onClick={b=>this.check_row(b)} id={id} />;
-                for (const key in row) {
-                    if(key !== 'checkbox' || key !== '__proto__')
-                        panel_row[key] = row[key]                     
-                } 
-                this.state.data_panel.push(panel_row);
+            });
+            panel.push(panel_row);
         });
-
+        this.setState( { data_panel:panel, } )
+        console.log(this.state.data_panel)
     }
     
     check_row(b){
+        console.log("CHECK",this.state.data)
         var key = b.target.id
+        console.log("CHECK",key)
         this.state.data[key].check = !this.state.data[key].check
     }
 
     get_value(value,field){
-        let i = this.state.data.length - 1
+        let i = this.state.data_temp.length - 1
         this.state.data_temp[i][field] = value
     }
+    
     editvalue(row, colum, val){
         
     }
@@ -97,14 +220,14 @@ class TablePage extends Component {
     save_value(){
         var i = this.state.data_temp.length - 1
         let newRow = this.state.data_temp[i]
-        if(newRow !== {} && newRow.hasOwnProperty(this.props.labels[1]["field"]) ){
+        if(newRow !== {} && newRow.hasOwnProperty(fields[1]["field"]) ){
             this.state.data_panel.pop()
             this.state.data_temp.pop()
-            this.props.actions.newData(newRow)
-            this.setState({})
+            this.post_aeropuerto(newRow)
+            this.setState({save:!this.state.save})
         }
         else{
-            let labelKey = this.props.labels[1]['label']
+            let labelKey = fields[1]['label']
             alert("Favor Ingresar dato en el Campo: "+labelKey)
         }
     }
@@ -126,7 +249,7 @@ class TablePage extends Component {
                          <CancelIcon onClick = {() => this.cancel_save()}/>
                 </div>
             newElement["confirm"]= confirm;
-            this.state.labels.forEach(col => {
+            fields.forEach(col => {
                 if(col.label !== "Seleccionar")
                     newElement[col.field]=(<MDBInput size="sm" type="textbox" hint={col.label} getValue={b=>this.get_value(b,col.field)} />)
             });
@@ -134,7 +257,7 @@ class TablePage extends Component {
             this.state.data_panel.push(newElement)
             this.state.data_temp.push({})
             
-            this.setState ({save : !this.state.save, empty:false});
+            this.setState ({save : !this.state.save});
         }
     }
 
@@ -148,7 +271,7 @@ class TablePage extends Component {
                     if (row.check){
                         check = true
                         for(let key in this.state.data_panel[index]){
-                            if(key != 'checkbox'){
+                            if(key != 'checkbox' && key !== '__proto__' ){
                                 let text = this.state.data[index][key]
                                 this.state.data_panel[index][key] = <MDBInput size="sm" type="textbox" hint={text}/>
                             }
@@ -175,8 +298,7 @@ class TablePage extends Component {
                 var row = this.state.data[index];
                 if (row.check)
                     check = true
-            }
-            
+            }            
             if(check)
                 this.setState({ confirm:true});
             else
@@ -193,15 +315,17 @@ class TablePage extends Component {
         for (let index = 0; index < this.state.data.length; index++) {
             var row = this.state.data[index];
             if (row.check)
-                elements.push(row[this.props.labels[0]["field"]])
+                elements.push({
+                    Codigo:row.Codigo,
+                    index:index
+                })
         }
-        this.props.actions.delData(elements)
+        this.delete_aeropuerto(elements)
         this.setState({confirm:false})
     }
     render(){
     return(
         <MDBCard narrow>
-
          <Dialog
             open={this.state.confirm}
             TransitionComponent={Transition}
@@ -222,8 +346,8 @@ class TablePage extends Component {
       </Dialog>
 
         <MDBCardHeader className="view view-cascade gradient-card-header blue-gradient d-flex justify-content-between align-items-center py-2 mx-4 mb-3">
-            <a href="#" className="white-text mx-3">{this.props.title}</a>
-            {this.props.editable && <div>
+            <a href="#" className="white-text mx-3">{'Funcionarios'}</a>
+            <div>
             {
                 this.state.edit &&
                 <MDBBtn outline  size="sm" color="green" className="px-2" onClick = {()=>this.get_values()}>
@@ -245,12 +369,12 @@ class TablePage extends Component {
             <MDBBtn outline  onClick = {() => this.delete_elements()}size="sm" color="white" className="px-2">
                 <DeleteIcon/>
             </MDBBtn>
-            </div>}
+            </div>
         </MDBCardHeader>
         <MDBCardBody cascade>
             
             <MDBTable btn fixed>
-            <MDBTableHead columns={this.state.labels} />
+            <MDBTableHead columns={fields} />
             <MDBTableBody rows={this.state.data_panel} />
             </MDBTable>
             

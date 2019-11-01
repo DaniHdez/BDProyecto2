@@ -41,7 +41,7 @@ class dashboard extends Component {
             else views [rout.key] = rout.component
         });
         this.state = {
-            view : views['home'],
+            view : views['airline'],
             viewsxroutes : views
         }
         
@@ -66,7 +66,7 @@ class dashboard extends Component {
                                 this.changeview(selected)
                     } } } >
                         <SideNav.Toggle />
-                        <SideNav.Nav defaultSelected="home">
+                        <SideNav.Nav defaultSelected="airline">
                         {
                             this.props.routes !== undefined &&
                             this.props.routes.length > 0 && 
@@ -83,7 +83,7 @@ class dashboard extends Component {
                                     ) } ) }
                             </NavItem>   
                         ) } ) }
-                        <hr/>
+    
                         <NavItem eventKey = "profile">
                             <NavIcon><AccountCircleIcon/></NavIcon>
                             <NavText> Perfil </NavText>
@@ -103,10 +103,7 @@ class dashboard extends Component {
                         </NavItem>
                         </SideNav.Nav>
                     </SideNav>
-                    <main>
-                        <Container>{<this.state.view/>}</Container>
-                        
-                    </main>
+                    <Container>{<this.state.view/>}</Container>
                 </React.Fragment>
             ) }/>
         </Router>

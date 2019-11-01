@@ -1,5 +1,4 @@
 
-const userSchema = require('./userSchema')
 var cors = require('cors');
 var express = require("express"),
   app = express(),
@@ -13,11 +12,16 @@ var express = require("express"),
   boleto = require("./api/models/boletoModel"),
   bodyParser = require("body-parser");
   
+useStyle
 
-const connectionString = "mongodb+srv:admin:paso1234@cluster0-ntg5g.mongodb.net/test?retryWrites=true&w=majority"
 
+const connectionString = "mongodb+srv://admin:paso1234@basesavanzadas-hxybp.mongodb.net/test?retryWrites=true&w=majority"
+// const connectionString = "mongodb://localhost/TECPlaneDB"
 mongoose.Promise = global.Promise;
-mongoose.connect(connectionString);
+mongoose.connect(connectionString)
+.catch(error => {
+  console.log(error)
+});
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));

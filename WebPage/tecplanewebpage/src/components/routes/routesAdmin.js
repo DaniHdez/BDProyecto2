@@ -1,6 +1,11 @@
 import React from 'react';
-import Aeropuerto from './adminviews/aeropuerto'
-import Aerolinea from './adminviews/aerolineaview'
+import Aeropuerto from './adminviews/aeropuertoTable'
+import Aerolinea from './adminviews/aerolineaTable'
+import Vuelo from './adminviews/vuelosTable'
+import Funcionario from './adminviews/FuncionariosTable'
+import reporteVuelos from './reportes/vuelosxAerolineas'
+import reporteRango from './reportes/vuelosxAerolineas'
+
 
 import FlightTakeoffIcon from '@material-ui/icons/FlightTakeoff';
 import LocalAirportIcon from '@material-ui/icons/LocalAirport';
@@ -26,14 +31,14 @@ const routeAdmin = [
     {
         text : "Vuelos",
         key : "flight",
-        component :Aerolinea,
+        component : Vuelo,
         icon : <FlightTakeoffIcon/>, 
         subTabs: []
     },
     {
         text : "Funcionarios",
         key : "staff",
-        component :  () => <h1> Hola Funcionarios </h1> ,
+        component :  Funcionario,
         icon : <GroupIcon/>, 
         subTabs: []
     },
@@ -42,7 +47,29 @@ const routeAdmin = [
         key : "reports",
         component :() => {return ( <h1> Hola Reportes </h1>) },
         icon : <TrendingUpIcon/>, 
-        subTabs: []
+        subTabs: [
+            {
+                text : "Vuelos por Aerolinea",
+                key : "reports/vuelos",
+                component : reporteVuelos,
+            },
+            {
+                text : "Rango por Pasajero",
+                key : "reports/rangos",
+                component : reporteRango,
+            },
+            {
+                text : "Destinos más Visitados",
+                key : "reports/destinos",
+                component : reporteVuelos,
+            },
+            {
+                text : "Operaciones de Compra",
+                key : "reports/operaciones",
+                component : reporteVuelos,
+            },
+            
+        ]
     }
 ];
 
